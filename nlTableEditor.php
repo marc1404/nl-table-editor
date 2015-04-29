@@ -24,9 +24,6 @@ switch($action){
     case 'rows':
         handleRowsAction($db);
         break;
-    case 'seed':
-        handleSeedAction($db);
-        break;
     default:
         handleUnknownAction();
 }
@@ -52,7 +49,7 @@ function handleTablesAction($db){
     $rows = [];
 
     while(($row = $result->fetch_row()) != null){
-        array_push($rows, $row[0]);
+        array_push($rows, '"'.$row[0].'"');
     }
 
     echo '['.implode(',', $rows).']';
@@ -66,7 +63,7 @@ function handleColumnsAction($db){
     $columns = [];
 
     while(($row = $result->fetch_assoc()) != null){
-        array_push($columns, $row['Field']);
+        array_push($columns, '"'.$row['Field'].'"');
     }
 
     echo '['.implode(',', $columns).']';
@@ -78,33 +75,27 @@ function handleRowsAction($db){
     $table = param('table', $db);
     $page = param('page');
     $rowsPerPage = 100;
-    $limitStart = ($page - 1) * $rowsPerPage;
-    $limitEnd = $limitStart + $rowsPerPage;
-    $result = $db->query('SELECT * FROM '.$table.' LIMIT '.$limitStart.', '.$limitEnd.';');
+    $offset = ($page - 1) * $rowsPerPage;
+    $result = $db->query('SELECT * FROM '.$table.' LIMIT '.$rowsPerPage.' OFFSET '.$offset.';');
     $rows = [];
 
     while(($row = $result->fetch_assoc()) != null){
-        var_dump(array_keys($row));
+        $keys = array_keys($row);
+        $rowJson = '{';
+
+        foreach($keys as $key){
+            $rowJson .= '"'.$key.'":"'.$row[$key].'",';
+        }
+
+        $rowJson = rtrim($rowJson, ',');
+        $rowJson .= '}';
+
+        array_push($rows, $rowJson);
     }
+
+    echo '['.implode(',', $rows).']';
 
     $result->close();
-}
-
-function handleSeedAction($db){
-    $db->query('TRUNCATE TABLE nl;');
-    $values = [];
-
-    for($i = 0; $i < 10000; $i++){
-        $number = rand(0, 1000);
-        $text = substr(md5(rand()), 0, 7);
-
-        array_push($values, '('.$number.','.$text.',NOW())');
-    }
-
-    $query = 'INSERT INTO nl (number, text, thetime) VALUES '.implode(',', $values).';';
-    echo $query;
-    $result = $db->query($query);
-    echo '"'.$result.'"';
 }
 
 function handleUnknownAction(){
