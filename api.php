@@ -41,7 +41,7 @@ function param($name, $db = null){
     $param = $_GET[$name];
 
     if(isset($db)){
-        $param = $db->real_escape_string($param);
+        $param = escape($db, $param);
     }
 
     return $param;
@@ -110,11 +110,40 @@ function handleRowsAction($db){
 
 function handleSaveAction($db){
     $table = param('table', $db);
-    $row = param('row', $db);
+    $primary = param('primary', $db);
+    $row = json_decode(param('row'), true);
+    $newValues = [];
 
-    var_dump($row);
+    foreach($row as $column => $value){
+        $column = escape($db, $column);
+        $value = escape($db, $value);
+
+        if($column !== $primary){
+            $newValue = $column.' = ';
+
+            if(is_numeric($value)){
+                $newValue .= $value;
+            }else{
+                $newValue .= wrapInTickMark($value);
+            }
+
+            array_push($newValues, $newValue);
+        }
+    }
+
+    $query = 'UPDATE '.$table.' SET '.implode(',', $newValues).' WHERE '.$primary.' = '.escape($db, $row[$primary]).';';
+
+    $db->query($query);
 }
 
 function handleUnknownAction(){
     echo 'Unknown action!';
+}
+
+function escape($db, $value){
+    return $db->real_escape_string($value);
+}
+
+function wrapInTickMark($string){
+    return '\''.$string.'\'';
 }

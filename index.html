@@ -3,13 +3,13 @@
     <head>
         <meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>NL Table Editor</title>
+        <title>NL Tabellen Editor</title>
         <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/cosmo/bootstrap.min.css" rel="stylesheet">
     </head>
     <body ng-controller="controller">
         <div class="container">
             <div class="page-header">
-                <h1>NL Table Editor</h1>
+                <h1>NL Tabellen Editor</h1>
             </div>
             <div class="row">
                 <div class="col-sm-2" style="margin-bottom: 10px">
@@ -19,13 +19,13 @@
                     <nav ng-show="table">
                         <ul class="pager" style="margin: 0">
                             <li ng-class="{ disabled: page <= 1 }">
-                                <a href="" ng-click="previous()">Previous</a>
+                                <a href="" ng-click="previous()">Vorherige</a>
                             </li>
                             <li class="disabled">
                                 <a href="" ng-bind="page"></a>
                             </li>
                             <li ng-class="{ disabled: rows.length === 0 }">
-                                <a href="" ng-click="next()">Next</a>
+                                <a href="" ng-click="next()">Nächste</a>
                             </li>
                         </ul>
                     </nav>
@@ -39,7 +39,7 @@
                             <span ng-bind="column" ng-if="column !== primary"></span>
                             <span class="label label-primary" ng-bind="column" ng-if="column === primary"></span>
                         </th>
-                        <th ng-if="selected">Save</th>
+                        <th ng-if="selected">Speichern</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,7 +49,7 @@
                             <input type="text" class="form-control" ng-model="row[column]" ng-if="isSelected(row)">
                         </td>
                         <td>
-                            <button type="button" class="btn btn-primary btn-block" ng-if="isSelected(row)" ng-click="save(row)">Save</button>
+                            <button type="button" class="btn btn-primary btn-block" ng-if="isSelected(row)" ng-click="save(row)">Speichern</button>
                         </td>
                     </tr>
                 </tbody>

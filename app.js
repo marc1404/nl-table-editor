@@ -26,6 +26,7 @@
         $scope.previous = function(){
             if($scope.page > 1){
                 $scope.page--;
+                $scope.selected = null;
 
                 loadRows();
             }
@@ -34,6 +35,7 @@
         $scope.next = function(){
             if($scope.rows.length > 0){
                 $scope.page++;
+                $scope.selected = null;
 
                 loadRows();
             }
@@ -49,7 +51,6 @@
 
         $scope.save = function(row){
             api('action=save&table=' + $scope.table + '&primary=' + $scope.primary + '&row=' + JSON.stringify(row, null , 0), function(data){
-                console.log(data);
                 $scope.selected = null;
             });
         };
