@@ -34,12 +34,22 @@
             <table class="table table-condensed table-hover">
                 <thead>
                     <tr>
-                        <th ng-repeat="column in columns" ng-bind="column"></th>
+                        <th ng-repeat="column in columns">
+                            <span ng-bind="column" ng-if="column !== primary"></span>
+                            <span class="label label-primary" ng-bind="column" ng-if="column === primary"></span>
+                        </th>
+                        <th ng-if="selected">Save</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="row in rows track by $index">
-                        <td ng-repeat="column in columns" ng-bind="row[column]"></td>
+                    <tr ng-repeat="row in rows track by $index" ng-click="select(row)">
+                        <td ng-repeat="column in columns">
+                            <span ng-bind="row[column]" ng-if="!isSelected(row)"></span>
+                            <input type="text" class="form-control" ng-model="row[column]" ng-if="isSelected(row)">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-block" ng-if="isSelected(row)" ng-click="save(row)">Save</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -47,6 +57,6 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
-        <script src="nlTableEditor.js"></script>
+        <script src="app.js"></script>
     </body>
 </html>

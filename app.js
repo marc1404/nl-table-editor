@@ -15,8 +15,9 @@
         $scope.changeTable = function(table){
             $scope.page = 1;
 
-            api('action=columns&table=' + table, function(columns){
-                $scope.columns = columns;
+            api('action=columns&table=' + table, function(data){
+                $scope.primary = data.primary;
+                $scope.columns = data.columns;
             });
 
             loadRows();
@@ -38,8 +39,23 @@
             }
         };
 
+        $scope.select = function(row){
+            $scope.selected = row;
+        };
+
+        $scope.isSelected = function(row){
+            return row === $scope.selected;
+        };
+
+        $scope.save = function(row){
+            api('action=save&table=' + $scope.table + '&primary=' + $scope.primary + '&row=' + JSON.stringify(row, null , 0), function(data){
+                console.log(data);
+                $scope.selected = null;
+            });
+        };
+
         function api(query, cb){
-            $http.get('nlTableEditor.php?' + query).success(cb);
+            $http.get('api.php?' + query).success(cb);
         }
 
         function loadRows(){

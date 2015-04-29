@@ -24,6 +24,9 @@ switch($action){
     case 'rows':
         handleRowsAction($db);
         break;
+    case 'save':
+        handleSaveAction($db);
+        break;
     default:
         handleUnknownAction();
 }
@@ -61,12 +64,19 @@ function handleColumnsAction($db){
     $table = param('table', $db);
     $result = $db->query('DESCRIBE '.$table.';');
     $columns = [];
+    $primary = 'id';
 
     while(($row = $result->fetch_assoc()) != null){
-        array_push($columns, '"'.$row['Field'].'"');
-    }
+        $column = $row['Field'];
 
-    echo '['.implode(',', $columns).']';
+        array_push($columns, '"'.$column.'"');
+
+        if($row['Key'] === 'PRI'){
+            $primary = $column;
+        }
+    }
+    echo '{"primary":"'.$primary.'","columns":';
+    echo '['.implode(',', $columns).']}';
 
     $result->close();
 }
@@ -96,6 +106,13 @@ function handleRowsAction($db){
     echo '['.implode(',', $rows).']';
 
     $result->close();
+}
+
+function handleSaveAction($db){
+    $table = param('table', $db);
+    $row = param('row', $db);
+
+    var_dump($row);
 }
 
 function handleUnknownAction(){
