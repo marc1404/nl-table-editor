@@ -27,6 +27,9 @@ switch($action){
     case 'save':
         handleSaveAction($db);
         break;
+    case 'add':
+        handleAddAction($db);
+        break;
     default:
         handleUnknownAction();
 }
@@ -49,7 +52,7 @@ function param($name, $db = null){
 
 function handleTablesAction($db){
     $result = $db->query('SHOW TABLES;');
-    $rows = [];
+    $rows = array();
 
     while(($row = $result->fetch_row()) != null){
         array_push($rows, '"'.$row[0].'"');
@@ -63,7 +66,7 @@ function handleTablesAction($db){
 function handleColumnsAction($db){
     $table = param('table', $db);
     $result = $db->query('DESCRIBE '.$table.';');
-    $columns = [];
+    $columns = array();
     $primary = 'id';
 
     while(($row = $result->fetch_assoc()) != null){
@@ -87,7 +90,7 @@ function handleRowsAction($db){
     $rowsPerPage = 100;
     $offset = ($page - 1) * $rowsPerPage;
     $result = $db->query('SELECT * FROM '.$table.' LIMIT '.$rowsPerPage.' OFFSET '.$offset.';');
-    $rows = [];
+    $rows = array();
 
     while(($row = $result->fetch_assoc()) != null){
         $keys = array_keys($row);
@@ -112,7 +115,7 @@ function handleSaveAction($db){
     $table = param('table', $db);
     $primary = param('primary', $db);
     $row = json_decode(param('row'), true);
-    $newValues = [];
+    $newValues = array();
 
     foreach($row as $column => $value){
         $column = escape($db, $column);
@@ -134,6 +137,15 @@ function handleSaveAction($db){
     $query = 'UPDATE '.$table.' SET '.implode(',', $newValues).' WHERE '.$primary.' = '.escape($db, $row[$primary]).';';
 
     $db->query($query);
+}
+
+function handleAddAction($db){
+    $table = param('table', $db);
+    $query = 'INSERT INTO '.$table.' () VALUES ();';
+
+    $db->query($query);
+
+    echo $db->insert_id;
 }
 
 function handleUnknownAction(){
