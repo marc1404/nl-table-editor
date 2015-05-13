@@ -50,8 +50,17 @@
         };
 
         $scope.save = function(row){
-            api('action=save&table=' + $scope.table + '&primary=' + $scope.primary + '&row=' + JSON.stringify(row, null , 0), function(data){
+            api('action=save&table=' + $scope.table + '&primary=' + $scope.primary + '&row=' + JSON.stringify(row, null , 0), function(){
                 $scope.selected = null;
+            });
+        };
+
+        $scope.addRow = function(){
+            api('action=add&table=' + $scope.table, function(id){
+                var row = { id: id };
+                $scope.selected = row;
+
+                $scope.rows.unshift(row);
             });
         };
 

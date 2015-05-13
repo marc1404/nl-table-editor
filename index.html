@@ -15,7 +15,7 @@
                 <div class="col-sm-2" style="margin-bottom: 10px">
                     <select class="form-control" ng-options="table for table in tables" ng-model="table" ng-change="changeTable(table)"></select>
                 </div>
-                <div class="col-sm-10">
+                <div class="col-sm-8">
                     <nav ng-show="table">
                         <ul class="pager" style="margin: 0">
                             <li ng-class="{ disabled: page <= 1 }">
@@ -29,6 +29,11 @@
                             </li>
                         </ul>
                     </nav>
+                </div>
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-success pull-right" ng-show="table" ng-click="addRow()">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
                 </div>
             </div>
             <hr />
