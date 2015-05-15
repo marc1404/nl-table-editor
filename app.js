@@ -64,6 +64,16 @@
             });
         };
 
+        $scope.delete = function(row){
+             api('action=delete&table=' + $scope.table + '&primary=' + $scope.primary + '&value=' + row[$scope.primary], function(){
+                var pos = $scope.rows.indexOf(row);
+
+                $scope.selected = null;
+
+                $scope.rows.splice(pos, 1);
+             });
+        };
+
         function api(query, cb){
             $http.get('api.php?' + query).success(cb);
         }

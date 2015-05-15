@@ -45,6 +45,7 @@
                             <span class="label label-primary" ng-bind="column" ng-if="column === primary"></span>
                         </th>
                         <th ng-if="selected">Speichern</th>
+                        <th ng-if="selected">Löschen</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,6 +56,9 @@
                         </td>
                         <td>
                             <button type="button" class="btn btn-primary btn-block" ng-if="isSelected(row)" ng-click="save(row)">Speichern</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-warning btn-block" ng-if="isSelected(row)" ng-click="delete(row)">Löschen</button>
                         </td>
                     </tr>
                 </tbody>
