@@ -30,6 +30,9 @@ switch($action){
     case 'add':
         handleAddAction($db);
         break;
+    case 'delete':
+        handleDeleteAction($db);
+        break;
     default:
         handleUnknownAction();
 }
@@ -146,6 +149,16 @@ function handleAddAction($db){
     $db->query($query);
 
     echo $db->insert_id;
+}
+
+function handleDeleteAction($db){
+    $table = param('table', $db);
+    $primary = param('primary', $db);
+    $value = param('value', $db);
+
+    $query = 'DELETE FROM '.$table.' WHERE '.$primary.' = '.$value.';';
+
+    $db->query($query);
 }
 
 function handleUnknownAction(){
