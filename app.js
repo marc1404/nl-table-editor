@@ -5,7 +5,7 @@
 (function(){
     var app = angular.module('app', []);
 
-    app.controller('controller', function($scope, $http){
+    app.controller('controller', function($scope, $http, $location){
         $scope.page = 1;
 
         api('action=tables', function(tables){
@@ -13,11 +13,14 @@
         });
 
         $scope.changeTable = function(table){
+            $scope.table = table;
             $scope.page = 1;
 
             api('action=columns&table=' + table, function(data){
                 $scope.primary = data.primary;
                 $scope.columns = data.columns;
+
+                $location.search('table', table);
             });
 
             loadRows();
@@ -57,7 +60,8 @@
 
         $scope.addRow = function(){
             api('action=add&table=' + $scope.table, function(id){
-                var row = { id: id };
+                var row = {};
+                row[$scope.primary] = id;
                 $scope.selected = row;
 
                 $scope.rows.unshift(row);
@@ -74,6 +78,8 @@
              });
         };
 
+        initTable();
+
         function api(query, cb){
             $http.get('api.php?' + query).success(cb);
         }
@@ -82,6 +88,15 @@
             api('action=rows&table=' + $scope.table + '&page=' + $scope.page, function(rows){
                 $scope.rows = rows;
             });
+        }
+
+        function initTable(){
+            var search = $location.search();
+            var table = search.table;
+
+            if(table){
+                $scope.changeTable(table);
+            }
         }
     });
 }());
