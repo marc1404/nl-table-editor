@@ -18,7 +18,12 @@
 
             api('action=columns&table=' + table, function(data){
                 $scope.primary = data.primary;
-                $scope.columns = data.columns;
+                $scope.columns = [];
+                $scope.columnTypes = data.columns;
+
+                for(var i = 0; i < data.columns.length; i++){
+                    $scope.columns.push(data.columns[i].name);
+                }
 
                 $location.search('table', table);
             });
@@ -49,7 +54,13 @@
         };
 
         $scope.select = function(row){
-            $scope.selected = row;
+            if(row !== $scope.selected){
+                $scope.selected = row;
+
+                setTimeout(function(){
+                    initDateTimePicker(row);
+                }, 1);
+            }
         };
 
         $scope.isSelected = function(row){
@@ -57,14 +68,13 @@
         };
 
         $scope.save = function(row){
-            api('action=save&table=' + $scope.table + '&primary=' + $scope.primary + '&row=' + JSON.stringify(row, null , 0), function(){
+            api('action=save&table=' + $scope.table + '&primary=' + $scope.primary + '&row=' + JSON.stringify(row, null , 0).replace(/&/g, '%26'), function(){
                 $scope.selected = null;
             });
         };
 
         $scope.addRow = function(){
             var newRow = {};
-            $scope.selected = newRow;
             var highestId = 0;
 
             for(var i = 0; i < $scope.rows.length; i++){
@@ -79,6 +89,7 @@
             newRow[$scope.primary] = highestId + 1;
 
             $scope.rows.unshift(newRow);
+            $scope.select(newRow);
         };
 
         $scope.delete = function(row){
@@ -107,6 +118,18 @@
             }
 
             return row[column];
+        };
+
+        $scope.getColumnType = function(column){
+            for(var i = 0; i < $scope.columnTypes.length; i++){
+                var columnType = $scope.columnTypes[i]
+
+                if(columnType.name === column){
+                    return columnType.type;
+                }
+            }
+
+            return false;
         };
 
         initTable();
@@ -150,6 +173,30 @@
             if(table){
                 $scope.changeTable(table);
             }
+        }
+
+        function initDateTimePicker(row){
+            var $elements = $('[data-datetimepicker]')
+
+            $elements.each(function(index, element){
+                var format = $(element).data('format');
+                var column = $(element).data('column');
+
+                if(format === 'datetime'){
+                    format = 'YYYY-MM-DD HH:mm:ss';
+                }else if(format === 'date'){
+                    format = 'YYYY-MM-DD';
+                }
+
+                $(element).datetimepicker({
+                    locale: 'de',
+                    format: format
+                }).on('dp.change', function(){
+                    row[column] = $(element).val();
+
+                    $scope.$apply();
+                });
+            });
         }
     });
 }());

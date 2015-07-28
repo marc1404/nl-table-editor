@@ -45,8 +45,18 @@
                     <span ng-bind="getForeignKeyName(row, column)" ng-if="isForeignKey(column)"></span>
                 </div>
                 <div ng-if="isSelected(row)">
-                    <input type="text" class="form-control" ng-model="row[column]" ng-if="!isForeignKey(column)">
-                    <select class="form-control" ng-options="item.id as item.name for item in foreignKeys[column]" ng-model="row[column]" ng-if="isForeignKey(column)"></select>
+                    <div ng-switch on="getColumnType(column)">
+                        <div ng-switch-when="date" style="position: relative">
+                            <input type="text" class="form-control" value="{{row[column]}}" data-datetimepicker data-format="date" data-column="{{column}}">
+                        </div>
+                        <div ng-switch-when="datetime" style="position: relative">
+                            <input type="text" class="form-control" value="{{row[column]}}" data-datetimepicker data-format="datetime" data-column="{{column}}">
+                        </div>
+                        <div ng-switch-default>
+                            <input type="text" class="form-control" ng-model="row[column]" ng-if="!isForeignKey(column)">
+                            <select class="form-control" ng-options="item.id as item.name for item in foreignKeys[column]" ng-model="row[column]" ng-if="isForeignKey(column)"></select>
+                        </div>
+                    </div>
                 </div>
             </td>
             <td>

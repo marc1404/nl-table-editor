@@ -73,14 +73,15 @@ function handleColumnsAction($db){
     $primary = 'id';
 
     while(($row = $result->fetch_assoc()) != null){
-        $column = $row['Field'];
+        $column = '{"name":"'.$row['Field'].'","type":"'.$row['Type'].'"}';
 
-        array_push($columns, '"'.$column.'"');
+        array_push($columns, $column);
 
         if($row['Key'] === 'PRI'){
-            $primary = $column;
+            $primary = $row['Field'];
         }
     }
+
     echo '{"primary":"'.$primary.'","columns":';
     echo '['.implode(',', $columns).']}';
 
@@ -138,12 +139,15 @@ function handleSaveAction($db){
     $table = param('table', $db);
     $primary = param('primary', $db);
     $row = json_decode(param('row'), true);
+    $columns = array();
     $insertValues = array();
     $updateValues = array();
 
     foreach($row as $column => $value){
         $column = escape($db, $column);
         $value = escape($db, $value);
+
+        array_push($columns, $column);
 
         if(!is_numeric($value)){
             $value = wrapInTickMark($value);
@@ -158,9 +162,13 @@ function handleSaveAction($db){
         }
     }
 
-    $query = 'INSERT INTO '.$table.' VALUES ('.implode(',', $insertValues).') ON DUPLICATE KEY UPDATE '.implode(',', $updateValues).';';
+    $query = 'INSERT INTO '.$table.' ('.implode(',', $columns).') VALUES ('.implode(',', $insertValues).') ON DUPLICATE KEY UPDATE '.implode(',', $updateValues).';';
 
-    $db->query($query);
+    $result = $db->query($query);
+
+    if(!$result){
+        echo $db->error;
+    }
 }
 
 function handleDeleteAction($db){
