@@ -27,9 +27,6 @@ switch($action){
     case 'save':
         handleSaveAction($db);
         break;
-    case 'add':
-        handleAddAction($db);
-        break;
     case 'delete':
         handleDeleteAction($db);
         break;
@@ -141,37 +138,29 @@ function handleSaveAction($db){
     $table = param('table', $db);
     $primary = param('primary', $db);
     $row = json_decode(param('row'), true);
-    $newValues = array();
+    $insertValues = array();
+    $updateValues = array();
 
     foreach($row as $column => $value){
         $column = escape($db, $column);
         $value = escape($db, $value);
 
+        if(!is_numeric($value)){
+            $value = wrapInTickMark($value);
+        }
+
+        array_push($insertValues, $value);
+
         if($column !== $primary){
-            $newValue = $column.' = ';
+            $updateValue = $column.' = '.$value;
 
-            if(is_numeric($value)){
-                $newValue .= $value;
-            }else{
-                $newValue .= wrapInTickMark($value);
-            }
-
-            array_push($newValues, $newValue);
+            array_push($updateValues, $updateValue);
         }
     }
 
-    $query = 'UPDATE '.$table.' SET '.implode(',', $newValues).' WHERE '.$primary.' = '.escape($db, $row[$primary]).';';
+    $query = 'INSERT INTO '.$table.' VALUES ('.implode(',', $insertValues).') ON DUPLICATE KEY UPDATE '.implode(',', $updateValues).';';
 
     $db->query($query);
-}
-
-function handleAddAction($db){
-    $table = param('table', $db);
-    $query = 'INSERT INTO '.$table.' () VALUES ();';
-
-    $db->query($query);
-
-    echo $db->insert_id;
 }
 
 function handleDeleteAction($db){

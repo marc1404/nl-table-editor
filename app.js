@@ -63,13 +63,10 @@
         };
 
         $scope.addRow = function(){
-            api('action=add&table=' + $scope.table, function(id){
-                var row = {};
-                row[$scope.primary] = id;
-                $scope.selected = row;
+            var row = {};
+            $scope.selected = row;
 
-                $scope.rows.unshift(row);
-            });
+            $scope.rows.unshift(row);
         };
 
         $scope.delete = function(row){
