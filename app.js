@@ -63,10 +63,22 @@
         };
 
         $scope.addRow = function(){
-            var row = {};
-            $scope.selected = row;
+            var newRow = {};
+            $scope.selected = newRow;
+            var highestId = 0;
 
-            $scope.rows.unshift(row);
+            for(var i = 0; i < $scope.rows.length; i++){
+                var row = $scope.rows[i];
+                var id = row[$scope.primary];
+
+                if(id > highestId){
+                    highestId = id;
+                }
+            }
+
+            newRow[$scope.primary] = highestId + 1;
+
+            $scope.rows.unshift(newRow);
         };
 
         $scope.delete = function(row){
