@@ -3,70 +3,17 @@
     <head>
         <meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>NL Tabellen Editor</title>
-        <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/cosmo/bootstrap.min.css" rel="stylesheet">
+        <title>Project Manager</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/cosmo/bootstrap.min.css" rel="stylesheet">
     </head>
-    <body ng-controller="controller">
-        <div class="container">
+    <body>
+        <div class="container-fluid">
             <div class="page-header">
-                <h1>NL Tabellen Editor</h1>
+                <h1>Project Manager</h1>
             </div>
-            <div class="row">
-                <div class="col-sm-2" style="margin-bottom: 10px">
-                    <select class="form-control" ng-options="table for table in tables" ng-model="table" ng-change="changeTable(table)"></select>
-                </div>
-                <div class="col-sm-8">
-                    <nav ng-show="table">
-                        <ul class="pager" style="margin: 0">
-                            <li ng-class="{ disabled: page <= 1 }">
-                                <a href="" ng-click="previous()">Vorherige</a>
-                            </li>
-                            <li class="disabled">
-                                <a href="" ng-bind="page"></a>
-                            </li>
-                            <li ng-class="{ disabled: rows.length === 0 }">
-                                <a href="" ng-click="next()">Nächste</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="btn btn-success pull-right" ng-show="table" ng-click="addRow()">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </button>
-                </div>
-            </div>
-            <hr />
-            <table class="table table-condensed table-hover">
-                <thead>
-                    <tr>
-                        <th ng-repeat="column in columns">
-                            <span ng-bind="column" ng-if="column !== primary"></span>
-                            <span class="label label-primary" ng-bind="column" ng-if="column === primary"></span>
-                        </th>
-                        <th ng-if="selected">Speichern</th>
-                        <th ng-if="selected">Löschen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="row in rows track by $index" ng-click="select(row)">
-                        <td ng-repeat="column in columns">
-                            <span ng-bind="row[column]" ng-if="!isSelected(row)"></span>
-                            <input type="text" class="form-control" ng-model="row[column]" ng-if="isSelected(row)">
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-block" ng-if="isSelected(row)" ng-click="save(row)">Speichern</button>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-warning btn-block" ng-if="isSelected(row)" ng-click="delete(row)">Löschen</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div ng-controller="controller" ng-include="'view.html'"></div>
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
         <script src="app.js"></script>
     </body>
 </html>

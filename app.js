@@ -23,6 +23,10 @@
                 $location.search('table', table);
             });
 
+            api('action=foreign-keys&table=' + table, function(data){
+                $scope.foreignKeys = data;
+            });
+
             loadRows();
         };
 
@@ -78,6 +82,24 @@
              });
         };
 
+        $scope.isForeignKey = function(column){
+            return $scope.foreignKeys && $scope.foreignKeys[column];
+        };
+
+        $scope.getForeignKeyName = function(row, column){
+            var items = $scope.foreignKeys[column];
+
+            for(var i = 0; i < items.length; i++){
+                var item = items[i];
+
+                if(item.id === row[column]){
+                    return item.name;
+                }
+            }
+
+            return row[column];
+        };
+
         initTable();
 
         function api(query, cb){
@@ -87,7 +109,29 @@
         function loadRows(){
             api('action=rows&table=' + $scope.table + '&page=' + $scope.page, function(rows){
                 $scope.rows = rows;
+
+                for(var i = 0; i < rows.length; i++){
+                    var row = rows[i];
+
+                    for(var column in row){
+                        if(row.hasOwnProperty(column)){
+                            var num = filterInt(row[column]);
+
+                            if(!isNaN(num)){
+                                row[column] = num;
+                            }
+                        }
+                    }
+                }
             });
+
+            function filterInt(value){
+                if(/^(\-|\+)?([0-9]+|Infinity)$/.test(value)){
+                    return Number(value);
+                }
+
+                return NaN;
+            }
         }
 
         function initTable(){

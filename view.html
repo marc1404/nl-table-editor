@@ -1,0 +1,60 @@
+<div class="row">
+    <div class="col-sm-3" style="margin-bottom: 10px">
+        <select class="form-control" ng-options="table for table in tables" ng-model="table" ng-change="changeTable(table)"></select>
+    </div>
+    <div class="col-sm-6">
+        <nav ng-show="table">
+            <ul class="pager" style="margin: 0">
+                <li ng-class="{ disabled: page <= 1 }">
+                    <a href="" ng-click="previous()">Vorherige</a>
+                </li>
+                <li class="disabled">
+                    <a href="" ng-bind="page"></a>
+                </li>
+                <li ng-class="{ disabled: rows.length === 0 }">
+                    <a href="" ng-click="next()">Nächste</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="col-sm-3">
+        <button type="button" class="btn btn-success pull-right" ng-show="table" ng-click="addRow()">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+    </div>
+</div>
+
+<hr />
+
+<table class="table table-condensed table-hover">
+    <thead>
+        <tr>
+            <th ng-repeat="column in columns">
+                <span ng-bind="column" ng-if="column !== primary"></span>
+                <span class="label label-primary" ng-bind="column" ng-if="column === primary"></span>
+            </th>
+            <th ng-if="selected">Speichern</th>
+            <th ng-if="selected">Löschen</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="row in rows track by $index" ng-click="select(row)">
+            <td ng-repeat="column in columns">
+                <div ng-if="!isSelected(row)">
+                    <span ng-bind="row[column]" ng-if="!isForeignKey(column)"></span>
+                    <span ng-bind="getForeignKeyName(row, column)" ng-if="isForeignKey(column)"></span>
+                </div>
+                <div ng-if="isSelected(row)">
+                    <input type="text" class="form-control" ng-model="row[column]" ng-if="!isForeignKey(column)">
+                    <select class="form-control" ng-options="item.id as item.name for item in foreignKeys[column]" ng-model="row[column]" ng-if="isForeignKey(column)"></select>
+                </div>
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary btn-block" ng-if="isSelected(row)" ng-click="save(row)">Speichern</button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-warning btn-block" ng-if="isSelected(row)" ng-click="delete(row)">Löschen</button>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -7,7 +7,7 @@
  */
 
 $action = param('action');
-$config = parse_ini_file('nlTableEditor.ini');
+$config = parse_ini_file('config.ini');
 $db = new mysqli('localhost', $config['db.user'], $config['db.password'], $config['db.database']);
 
 if($db->connect_errno){
@@ -32,6 +32,9 @@ switch($action){
         break;
     case 'delete':
         handleDeleteAction($db);
+        break;
+    case 'foreign-keys':
+        handleForeignKeysAction($db);
         break;
     default:
         handleUnknownAction();
@@ -114,6 +117,26 @@ function handleRowsAction($db){
     $result->close();
 }
 
+function handleForeignKeysAction($db){
+    $table = param('table', $db);
+    $result = $db->query('SELECT COLUMN_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '.wrapInTickMark(escape($db, $table)).' AND REFERENCED_TABLE_NAME IS NOT NULL AND REFERENCED_COLUMN_NAME IS NOT NULL;');
+    $foreignKeys = '{';
+
+    while(($row = $result->fetch_assoc()) != null){
+        $column = $row['COLUMN_NAME'];
+        $referencedTable = $row['REFERENCED_TABLE_NAME'];
+        $referencedColumn = $row['REFERENCED_COLUMN_NAME'];
+        $referencedValues = getForeignKeyValues($db, $referencedTable, $referencedColumn);
+        $foreignKeys .= '"'.$column.'":['.implode(',', $referencedValues).'],';
+    }
+
+    $foreignKeys = trim($foreignKeys, ',').'}';
+
+    echo $foreignKeys;
+
+    $result->close();
+}
+
 function handleSaveAction($db){
     $table = param('table', $db);
     $primary = param('primary', $db);
@@ -171,4 +194,40 @@ function escape($db, $value){
 
 function wrapInTickMark($string){
     return '\''.$string.'\'';
+}
+
+function getForeignKeyValues($db, $table, $column){
+    $result = $db->query('SELECT * FROM '.$table.';');
+    $rows = array();
+
+    while(($row = $result->fetch_assoc()) != null){
+        $id = $row[$column];
+        $name = getNameFromRow($row);
+
+        array_push($rows, '{"id":'.$id.',"name":"'.$name.'"}');
+    }
+
+    $result->close();
+
+    return $rows;
+}
+
+function getNameFromRow($row){
+    $name = '';
+
+    foreach($row as $column => $value){
+        if(strpos($column, 'name') !== false){
+            $name .= $value.' ';
+        }
+    }
+
+    if(strlen($name) > 0){
+        return trim($name);
+    }
+
+    foreach($row as $column => $value){
+        $name .= $value.' ';
+    }
+
+    return trim($name);
 }
