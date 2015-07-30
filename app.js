@@ -68,7 +68,14 @@
         };
 
         $scope.save = function(row){
-            api('action=save&table=' + $scope.table + '&primary=' + $scope.primary + '&row=' + JSON.stringify(row, null , 0).replace(/&/g, '%26'), function(){
+            api('action=save&table=' + $scope.table + '&primary=' + $scope.primary + '&row=' + JSON.stringify(row, null , 0).replace(/&/g, '%26'), function(data){
+                if(data.error){
+                    $scope.error = data.error;
+
+                    return;
+                }
+
+                $scope.error = null;
                 $scope.selected = null;
             });
         };

@@ -26,6 +26,14 @@
 
 <hr />
 
+<div ng-show="error">
+    <div class="alert alert-danger">
+        <button type="button" class="close" ng-click="error = null">&times;</button>
+        <span ng-bind="error"></span>
+    </div>
+    <hr />
+</div>
+
 <table class="table table-condensed table-hover">
     <thead>
         <tr>

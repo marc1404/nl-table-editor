@@ -163,11 +163,10 @@ function handleSaveAction($db){
     }
 
     $query = 'INSERT INTO '.$table.' ('.implode(',', $columns).') VALUES ('.implode(',', $insertValues).') ON DUPLICATE KEY UPDATE '.implode(',', $updateValues).';';
-
     $result = $db->query($query);
 
     if(!$result){
-        echo $db->error;
+        echo '{"error":"'.$db->error.'"}';
     }
 }
 
